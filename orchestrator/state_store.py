@@ -27,6 +27,9 @@ class StateStore:
     def snapshot(self) -> Dict[str, Any]:
         return dict(self.state)
 
+    def restore(self, snapshot: Dict[str, Any]) -> None:
+        self.state = dict(snapshot)
+
     def fork(self) -> "StateStore":
         clone = StateStore()
         clone.state = dict(self.state)

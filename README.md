@@ -51,6 +51,15 @@ Each stage is tracked with explicit dependencies and gating logic. The workflow 
 4. Visit the API docs:
    `http://127.0.0.1:8000/docs`
 
+Run the delivery orchestration demo separately:
+
+`python run_orchestrator.py "Deliver a reliable URL shortener"`
+
+The demo executes all six agents, prints the release approval block, and resumes
+the same workflow after approval. To enable live planning calls, set
+`OPENAI_API_KEY` and optionally `OPENAI_MODEL`; offline deterministic planning is
+used when no key is present.
+
 ## Example usage
 
 - POST `/shorten` with JSON: `{ "url": "https://example.com" }`
@@ -60,7 +69,7 @@ Each stage is tracked with explicit dependencies and gating logic. The workflow 
 ## Structure
 
 - `app/`: application code and persistence layer
-- `orchestrator/`: dependency graph, workflow state, metrics, governance, and agent stubs
+- `orchestrator/`: executable dependency graph, workflow state, metrics, governance, and agents
 - `tests/`: automated validation
 - `docs/`: architecture and process notes
 - `scenarios/`: greenfield, brownfield, and ambiguous requirements

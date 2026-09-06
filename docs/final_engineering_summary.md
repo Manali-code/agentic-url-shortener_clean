@@ -20,7 +20,8 @@ This split keeps the codebase modular and makes the project easier to reason abo
 - Workflow graph with dependency ordering and stage tracking
 - Approval gate and policy engine for controlled release governance
 - Reliability metrics for retry, rollback, success rate, and latency observation
-- Test suite covering the core API flow
+- Executable CLI demonstrating blocked and approved release states
+- Test suite covering API and orchestration control flows
 - Architecture, orchestration, and scenario documentation
 
 ## Risks and trade-offs
@@ -32,19 +33,27 @@ This split keeps the codebase modular and makes the project easier to reason abo
 
 ## Validation approach
 
-Validation was performed through automated API tests that exercise the happy path:
+Validation is performed through automated API and orchestration tests:
 
 - root endpoint health check
 - URL shortening
 - redirect execution
 - click tracking and stats retrieval
+- approval blocking and resumable release
+- bounded transient retry with state rollback
+- security policy violation stopping release
 
-The test suite confirms the app is runnable and its main user flow behaves as expected.
+`python run_orchestrator.py "Add analytics"` also demonstrates the runtime: five
+steps complete, release reports `Awaiting human approval`, and the same workflow
+resumes to `ready_for_release` after approval. The full test command is
+`python -m pytest -q`.
 
 ## Assumptions and limitations
 
 - This is a prototype intended to demonstrate agentic orchestration patterns and workflow governance.
-- The orchestration layer models controlled autonomy rather than a live external AI runtime.
+- The orchestration layer models controlled autonomy; requirements and architecture
+	can call the OpenAI Responses API when `OPENAI_API_KEY` is configured, with an
+	offline deterministic fallback.
 - Production-grade features such as persistent workflow state, distributed tracing, richer policy enforcement, and full deployment automation would require a larger implementation footprint.
 
 ## Conclusion

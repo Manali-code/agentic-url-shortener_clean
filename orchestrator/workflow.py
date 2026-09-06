@@ -73,16 +73,19 @@ class Workflow:
                     step.notes = "Awaiting human approval"
                     continue
 
-            try:
-                result = executor(step_name)
-                step.status = "completed"
-                step.notes = result
-            except Exception as exc:  # pragma: no cover - defensive runtime guard
-                step.status = "failed"
-                step.last_error = str(exc)
-                step.retry_count += 1
-                if step.retry_count > 2:
-                    step.status = "stopped"
-                    raise
+            max_retries = graph.get_step(step_name).get("retries", 0)
+            while True:
+                try:
+                    result = executor(step_name)
+                    step.status = "completed"
+                    step.notes = result
+                    break
+                except Exception as exc:  # pragma: no cover - defensive runtime guard
+                    step.status = "failed"
+                    step.last_error = str(exc)
+                    if step.retry_count >= max_retries:
+                        step.status = "stopped"
+                        raise
+                    step.retry_count += 1
 
         return self.snapshot()
